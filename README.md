@@ -97,7 +97,7 @@ check variable from files
 
 - npm run build = first check .env > if not found then .env.production.local > if not found then .env.production > lastly then .env.local
 
-#### 1. Installation
+#### 1. Installation [env-cmd](https://www.npmjs.com/package/env-cmd)
 
 - Install env-cmd npm package.
 
