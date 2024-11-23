@@ -26,6 +26,10 @@
 npm install http-proxy-middleware --save
 ```
 
+```sh
+npm i dotenv --save
+```
+
 - If your react project create by CRA command. Create and Configure the setupProxy.js File in root.
 
 ```sh

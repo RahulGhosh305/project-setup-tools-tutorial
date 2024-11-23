@@ -1,5 +1,5 @@
 {
-  "name": "http-proxy-middleware-setup",
+  "name": "project-setup-tools",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -7,12 +7,11 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview",
-    "build-prod": "vite build --mode production"
+    "preview": "vite preview"
   },
   "dependencies": {
-    "@vitejs/plugin-react": "^4.3.3",
     "dotenv": "^16.4.5",
+    "env-cmd": "^10.1.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
   },
