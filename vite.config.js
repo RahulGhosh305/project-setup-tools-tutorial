@@ -6,13 +6,14 @@ export default defineConfig({
   plugins: [react()],
   server: {
     proxy: {
-      // this api is proxied name url
+      // the "development" key represents a proxy rule that matches requests starting with /development
       "/development": {
         target: "https://jsonplaceholder.typicode.com", // Replace with your backend API URL
         changeOrigin: true, // Adjust the `Origin` header to match the target URL
         secure: false, // Optional: Set to false if using an HTTPS target with self-signed certificate
-        rewrite: (path) => path.replace(/^\/development/, ""), // Optional: Removes `/api-v1` prefix if needed
+        rewrite: (path) => path.replace(/^\/development/, ""), // Optional: Removes `/development` prefix if needed
       },
+      // multiple base urls
       "/production": {
         target: "https://dummyjson.com",
         changeOrigin: true,
