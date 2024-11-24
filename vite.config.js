@@ -6,6 +6,7 @@ export default defineConfig({
   plugins: [react()],
   server: {
     proxy: {
+      // this api is proxied name url
       "/development": {
         target: "https://jsonplaceholder.typicode.com", // Replace with your backend API URL
         changeOrigin: true, // Adjust the `Origin` header to match the target URL
