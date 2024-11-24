@@ -1,32 +1,77 @@
-# Http-proxy-middleware and dot env Tutorial in Vite (React)
+# Http-Proxy-Middleware and dot env setup tutorial in Vite (React)
 
 - Setting up an HTTP proxy middleware in a React application is often necessary to handle situations where the React app (running on a development server) needs to communicate with a backend server. This middleware acts as a bridge to solve several common challenges:
 
+---
+
 ### Avoiding CORS Issues
 
-- What is CORS?: Cross-Origin Resource Sharing (CORS) is a security mechanism enforced by browsers to restrict how resources are shared across different domains.
+**What is CORS?**:
+
+- Cross-Origin Resource Sharing (CORS) is a security mechanism enforced by browsers to restrict how resources are shared across different domains.
 - Problem: During development, your React app typically runs on http://localhost:3000, while your API backend might run on http://localhost:5000. This triggers CORS errors since the origins are different.
 - Solution: An HTTP proxy middleware forwards requests from your React app to the backend server without triggering CORS restrictions because the browser sees the request as originating from the same domain.
 
-- Simplifying API Calls
+**Simplifying API Calls**
+
 - Without a proxy, you need to include the full URL of the API, including the domain and port (e.g., http://localhost:5000/api/resource) in your fetch or axios calls.
 - With a proxy, you can simplify the API path (e.g., /api/resource), as the middleware takes care of routing it to the correct server.
 
-- Handling Path and Routing Complexity
+**Handling Path and Routing Complexity**
+
 - If your backend has specific route handling or needs certain headers for requests (like authentication or custom tokens), the middleware can modify the requests before forwarding them to the backend.
 
-- Isolating Configuration
+**Isolating Configuration**
+
 - During development, the proxy helps mimic a production-like setup where your frontend and backend communicate seamlessly, without changing the React app's code for different environments.
 
 - Multiple backend API url setup.
 
-### How to Set It Up http-proxy-middleware?
+---
+
+### Install
+
+`http-proxy-middleware`: First, you need to install the http-proxy-middleware package.
 
 ```sh
 npm install http-proxy-middleware --save
 ```
 
-- If your react project create by CRA command. Create and Configure the setupProxy.js File in root.
+**Configure** Proxy in Vite: You can configure the proxy in the `vite.config.js` file.
+
+```sh
+import react from "@vitejs/plugin-react-swc";
+import { defineConfig } from "vite";
+
+// https://vite.dev/config/
+export default defineConfig({
+  plugins: [react()],
+  server: {
+    proxy: {
+      "/development": {
+        target: "https://jsonplaceholder.typicode.com", // Replace with your backend API URL
+        changeOrigin: true, // Adjust the `Origin` header to match the target URL
+        secure: false, // Optional: Set to false if using an HTTPS target with self-signed certificate
+        rewrite: (path) => path.replace(/^\/development/, ""), // Optional: Removes `/api-v1` prefix if needed
+      },
+      "/production": {
+        target: "https://dummyjson.com",
+        changeOrigin: true,
+        secure: false,
+        rewrite: (path) => path.replace(/^\/production/, ""),
+      },
+      "/qa": {
+        target: "https://qa-api.com",
+        changeOrigin: true,
+        secure: false,
+        rewrite: (path) => path.replace(/^\/qa/, ""),
+      },
+    },
+  },
+});
+```
+
+- If your react project create by **CRA** command. Create and Configure the setupProxy.js File in root.
 
 ```sh
 const { createProxyMiddleware } = require('http-proxy-middleware');
@@ -42,29 +87,7 @@ module.exports = function(app) {
 };
 ```
 
-- If your react project create by vite
-
-```sh
-import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react';
-
-export default defineConfig({
-  plugins: [react()],
-  server: {
-    proxy: {
-      // Proxy `/api` to `http://localhost:5000`
-      '/api': {
-        target: 'http://localhost:5000', // Replace with your target server
-        changeOrigin: true,             // Adjust the `Origin` header to match the target URL
-        secure: false,                  // Set to false if using an HTTPS target with self-signed certificate
-        rewrite: (path) => path.replace(/^\/api/, ''), // Remove `/api` prefix if needed
-      },
-    },
-  },
-});
-```
-
-- Example Request in React
+- Example Request in `React`
 
 ```sh
 import React, { useEffect, useState } from 'react';
