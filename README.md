@@ -1,4 +1,4 @@
-# Http-proxy-middleware and dot env Tutorial
+# Http-proxy-middleware and dot env Tutorial in Vite (React)
 
 - Setting up an HTTP proxy middleware in a React application is often necessary to handle situations where the React app (running on a development server) needs to communicate with a backend server. This middleware acts as a bridge to solve several common challenges:
 
@@ -24,10 +24,6 @@
 
 ```sh
 npm install http-proxy-middleware --save
-```
-
-```sh
-npm i dotenv --save
 ```
 
 - If your react project create by CRA command. Create and Configure the setupProxy.js File in root.
@@ -89,83 +85,213 @@ function App() {
 export default App;
 ```
 
-# .env setup
+# Vite Environment Variable System
 
-check variable from files
+Vite provides a robust system for managing environment variables. Here's how it works:
 
-#### development
-
-- npm run dev = first check .env > if not found then .env.development.local > if not found then .env.development > lastly then .env.local
-
-#### production
-
-- npm run build = first check .env > if not found then .env.production.local > if not found then .env.production > lastly then .env.local
-
-#### 1. Installation [env-cmd](https://www.npmjs.com/package/env-cmd)
-
-- Install env-cmd npm package.
+## Installation
 
 ```sh
-npm i env-cmd
+npm i dotenv --save
 ```
 
-- Create .env files in the root of your application.
+## **Environment Variable Files**
+
+Vite automatically loads environment variable files based on the following rules:
+
+### **Base Files**
+
+- `.env`  
+  Loaded in **all environments**.
+
+- `.env.local`  
+  Loaded in **all environments**, but is **ignored by version control** (useful for secrets).
+
+### **Environment-Specific Files**
+
+- `.env.[mode]`  
+  Loaded for a **specific mode** (e.g., `development`, `production`).
+
+- `.env.[mode].local`  
+  Loaded for a **specific mode**, but is **ignored by version control**.
+
+---
+
+## **Loading Priority**
+
+Vite loads environment files in the following order, with the **highest priority first**:
+
+1. `.env.[mode].local`
+2. `.env.[mode]`
+3. `.env.local`
+4. `.env`
+
+Variables defined in higher-priority files will override those in lower-priority files.
+
+---
+
+## **Usage in Vite**
+
+Environment variables must be prefixed with `VITE_` to be accessible in your application. For example:
+
+`.env`
 
 ```sh
- .env.development
- .env.staging
- .env.production
+VITE_API_URL:https://localhost:3000
 ```
 
-- .env.development
+## Create Environment Files
+
+To manage environment variables effectively, create the following files in the root of your project:
+
+`.env.development.local`
 
 ```sh
-REACT_APP_API_ENDPOINT=http://localhost:3001
+VITE_DEVELOPMENT_SECRET=dev-secret-local
 ```
 
-- .env.staging
+`.env.development`
 
 ```sh
-REACT_APP_API_ENDPOINT=http://localhost:8001
+VITE_API_URL=http://localhost:3000
+VITE_DEVELOPMENT_FEATURE=true
 ```
 
-- .env.production
+`.env.local`
 
 ```sh
-REACT_APP_API_ENDPOINT=http://localhost:9000
+VITE_LOCAL_SECRET_KEY=local-secret-value
 ```
 
-- Note:- CRA Project - you need to prefix all environment variables with REACT*APP*
-- Note:- Vite - you need to prefix all environment variables with VITE\_
-
-- Update package.json scripts.
+`.env`
 
 ```sh
-"scripts": {
-    "start": "env-cmd -f .env.development react-scripts start",
-    "start:staging": "env-cmd -f .env.staging react-scripts start",
-    "start:production": "env-cmd -f .env.production react-scripts start",
-    "build": "env-cmd -f .env.development react-scripts build",
-    "build:staging": "env-cmd -f .env.staging react-scripts build",
-    "build:production": "env-cmd -f .env.production react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
-},
+VITE_APP_NAME=MyApp
+VITE_API_URL=https://api.example.com
 ```
 
-- To use env-cmd for environment files, you can modify the commands like this:
+## Access Environment Variables in Code
+
+Vite requires environment variables to start with `VITE_` in order to be accessible in the client-side code. Here's how you can access them:
+
+---
+
+### **Example: `src/main.jsx`**
 
 ```sh
-"scripts": {
-  "dev": "env-cmd -f .env.development vite",
-  "dev:staging": "env-cmd -f .env.staging vite --mode staging",
-  "dev:production": "env-cmd -f .env.production vite --mode production",
-  "build": "env-cmd -f .env.development vite build",
-  "build:staging": "env-cmd -f .env.staging vite build --mode staging",
-  "build:production": "env-cmd -f .env.production vite build --mode production",
-  "preview": "vite preview",
-  "test": "vitest",
-  "eject": "echo 'Vite does not support ejecting.'"
+console.log("App Name:", import.meta.env.VITE_APP_NAME);
+console.log("API URL:", import.meta.env.VITE_API_URL);
+console.log("Development Feature:", import.meta.env.VITE_DEVELOPMENT_FEATURE);
+```
+
+## Ignoring `.env.local` Files
+
+To prevent `.env.local` files from being version-controlled, add them to your `.gitignore` file. This ensures that sensitive information or local configurations are not accidentally shared.
+
+---
+
+### **Update `.gitignore`**
+
+Add the following lines to your `.gitignore` file:
+
+```gitignore
+# Local env files
+.env.local
+.env.*.local
+```
+
+## Example Use Case
+
+Suppose you have the following environment variables defined:
+
+- A feature toggle `VITE_DEVELOPMENT_FEATURE` in `.env.development`
+- A secret key `VITE_DEVELOPMENT_SECRET` in `.env.development.local`
+
+---
+
+### **Example: `src/App.jsx`**
+
+```sh
+function App() {
+  const isDevelopmentFeatureEnabled = import.meta.env.VITE_DEVELOPMENT_FEATURE;
+  const secretKey = import.meta.env.VITE_DEVELOPMENT_SECRET;
+
+  return (
+    <div>
+      <h1>{import.meta.env.VITE_APP_NAME}</h1>
+      <p>API URL: {import.meta.env.VITE_API_URL}</p>
+      <p>Feature Enabled: {isDevelopmentFeatureEnabled ? "Yes" : "No"}</p>
+      <p>Secret Key: {secretKey}</p>
+    </div>
+  );
 }
 
+export default App;
+```
+
+## Running the App in Different Modes
+
+You can run your Vite app in different modes using the **--mode** flag.
+
+For **development** (default mode):
+
+```sh
+npm run dev
+```
+
+This will load the following files (in order of priority):
+
+1. `.env.development.local`
+2. `.env.development`
+3. `.env.local`
+4. `.env`
+
+For **Production**
+
+```sh
+npm run build
+```
+
+or using mode
+
+```sh
+npm run build --mode production
+```
+
+This will load the following files (in order of priority):
+
+1. `.env.production.local`
+2. `.env.production`
+3. `.env.local`
+4. `.env`
+
+## Example `package.json` Scripts
+
+Ensure your `package.json` has the following scripts to run and build your Vite app:
+
+---
+
+### **Example `package.json`**
+
+For three files in **package.json** script is using `mode`
+
+`.env.development.local`
+`.env.producttion.local`
+`.env.qa.local`
+
+```sh
+{
+  "scripts": {
+  "lint": "eslint .",
+  "dev": "vite",
+  "build:dev": "vite build --mode development",
+  "preview:dev": "vite preview --mode development",
+  "prod": "vite --mode production",
+  "build:prod": "vite build --mode production",
+  "preview:prod": "vite preview --mode production",
+  "qa": "vite --mode qa",
+  "build:qa": "vite build --mode qa",
+  "preview:qa": "vite preview --mode qa"
+  }
+}
 ```

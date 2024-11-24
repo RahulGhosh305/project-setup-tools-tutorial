@@ -4,10 +4,16 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "dev": "vite",
+    "build": "vite build --mode development",
+    "preview": "vite preview --mode development",
+    "prod": "vite --mode production",
+    "build:prod": "vite build --mode production",
+    "preview:prod": "vite preview --mode production",
+    "qa": "vite --mode qa",
+    "build:qa": "vite build --mode qa",
+    "preview:qa": "vite preview --mode qa"
   },
   "dependencies": {
     "dotenv": "^16.4.5",
